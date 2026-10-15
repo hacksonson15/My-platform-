@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Login - Standalone</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+body{background:#eef2f5;height:100vh;height:100dvh;display:flex;justify-content:center;align-items:center;padding:20px}
+#login-page{display:flex;justify-content:center;align-items:center;width:100%;height:100%}
+.login-card{background:#ffffff;width:100%;max-width:380px;padding:30px 25px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.08);text-align:center;animation:loginPop 0.4s ease}
+@keyframes loginPop{0%{opacity:0;transform:translateY(10px) scale(0.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.login-card h2{margin-bottom:8px;color:#333;font-size:22px;font-weight:800}
+.login-card p{color:#666;font-size:14px;margin-bottom:25px}
+.input-group{margin-bottom:15px;text-align:left}
+.input-group label{display:block;font-size:11px;color:#555;margin-bottom:5px;font-weight:700;letter-spacing:0.5px}
+.input-group input{width:100%;padding:12px 12px;border:1.5px solid #ddd;border-radius:8px;outline:none;font-size:14px;transition:.2s;background:#fff}
+.input-group input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+.login-btn{width:100%;padding:12px;background:linear-gradient(90deg,#3b82f6,#6366f1);color:#fff;border:none;border-radius:8px;font-weight:800;font-size:15px;cursor:pointer;margin-top:10px;transition:all .2s;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(59,130,246,0.4)}
+.login-btn:active{transform:scale(0.98)}
+.error-msg{display:none;margin-top:12px;color:#ef4444;background:#fef2f2;border:1px solid #fecaca;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div id="login-page">
+    <div class="login-card">
+        <h2>Welcome Back</h2>
+        <p>Please login to continue</p>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label>USERNAME / EMAIL</label>
+                <input type="text" id="username" placeholder="Enter username" required autocomplete="username">
+            </div>
+            <div class="input-group">
+                <label>PASSWORD</label>
+                <input type="password" id="password" placeholder="Enter password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="login-btn"><i class="fa-solid fa-right-to-bracket" style="margin-right:6px"></i> LOGIN</button>
+            <div id="loginError" class="error-msg"></div>
+        </form>
+    </div>
+</div>
+
+<script>
+function handleLogin(e){
+    if(e) e.preventDefault();
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+    const errorEl = document.getElementById('loginError');
+
+    const username = userInput.value.trim();
+    const password = passInput.value.trim();
+
+    if(!username || !password){
+        if(errorEl){ errorEl.style.display='block'; errorEl.innerText='Please fill all fields'; }
+        return;
+    }
+
+    // Save user
+    try{
+        localStorage.setItem('currentLoggedInUser', username);
+        localStorage.setItem('isLoggedIn', 'true');
+    }catch(err){ console.log(err); }
+
+    // Success animation then redirect
+    const btn = document.querySelector('.login-btn');
+    if(btn){
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Success';
+        btn.style.background = '#22c55e';
+    }
+
+    // Original app logic: hide login, show main
+    // For standalone, we redirect to message page or index
+    setTimeout(()=>{
+        // If you want to redirect to your main app, change this:
+        // window.location.href = 'Index.html';
+        // For now, just show success
+        alert('Login Successful! Welcome ' + username);
+        // Uncomment next line to go to message page
+        // window.location.href = 'message_standalone.html';
+        
+        // Reset
+        if(btn){
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket" style="margin-right:6px"></i> LOGIN';
+            btn.style.background = '';
+        }
+    }, 600);
+}
+
+// Enter key support already via form
+document.addEventListener('DOMContentLoaded', ()=>{
+    const saved = localStorage.getItem('currentLoggedInUser');
+    if(saved){
+        const u = document.getElementById('username');
+        if(u) u.value = saved;
+    }
+});
+</script>
+
+</body>
+</html>

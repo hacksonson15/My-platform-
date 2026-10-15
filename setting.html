@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Settings</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;user-select:none}
+body{background:#f8fafc;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+#settingsPage{max-width:500px;margin:0 auto;width:100%;height:100vh;height:100dvh;background:#ffffff;display:flex;flex-direction:column;box-shadow:0 0 15px rgba(0,0,0,0.05)}
+.settings-page-header{padding:12px 14px;display:flex;align-items:center;gap:12px;background:#ffffff;border-bottom:1px solid #e5e7eb;flex-shrink:0;position:sticky;top:0;z-index:10}
+.back-btn{width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#0f172a;cursor:pointer;transition:.2s}
+.back-btn:hover{background:#e2e8f0}
+.header-title{font-size:16px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:10px}
+.header-title i{width:32px;height:32px;border-radius:10px;background:#eff6ff;color:#3b82f6;display:flex;align-items:center;justify-content:center}
+.settings-tab-body{flex:1;overflow-y:auto;padding:14px 14px 24px 14px;display:flex;flex-direction:column;gap:12px;background:#f8fafc}
+.set-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+.set-card-title{font-size:12px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:8px}
+.set-card-title i{color:#3b82f6;background:#eff6ff;width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:11px}
+.set-row-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.set-row-left i{width:36px;height:36px;border-radius:10px;background:#fff;border:1px solid #eef2f7;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:16px;flex-shrink:0}
+.set-row-info{flex:1;min-width:0}
+.set-row-label{font-size:13px;font-weight:700;color:#1e293b}
+.set-row-sub{font-size:11px;color:#94a3b8;margin-top:2px;line-height:1.3}
+.set-radio-group{display:flex;gap:8px;padding:6px 2px}
+.set-radio{flex:1;padding:10px;border-radius:10px;border:1.5px solid #e5e7eb;background:#fff;font-size:12px;font-weight:700;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;text-align:center}
+.set-radio.selected{border-color:#3b82f6;background:#eff6ff;color:#2563eb;box-shadow:0 2px 8px rgba(59,130,246,0.15)}
+.set-silence-note{font-size:11px;color:#64748b;background:#fffbeb;border:1px dashed #fde68a;padding:8px 10px;border-radius:9px;display:flex;gap:7px;line-height:1.4}
+/* switch */
+.switch{position:relative;display:inline-block;width:46px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.3s;border-radius:24px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%}
+input:checked+.slider{background-color:#3b82f6}
+input:checked+.slider:before{transform:translateX(22px)}
+</style>
+</head>
+<body>
+<div id="settingsPage">
+    <div class="settings-page-header">
+        <div class="back-btn" onclick="window.location.href='index.html'"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="header-title"><i class="fa-solid fa-gear"></i> Settings</div>
+    </div>
+    <div class="settings-tab-body">
+        <!-- Who can PM you -->
+        <div class="set-card">
+            <div class="set-card-title"><i class="fa-solid fa-comments"></i> Privacy - Who can PM you?</div>
+            <div class="set-radio-group">
+                <div class="set-radio selected" id="pmEveryone" onclick="setPmMode('everyone')"><i class="fa-solid fa-earth-asia"></i> Everyone</div>
+                <div class="set-radio" id="pmFriends" onclick="setPmMode('friends')"><i class="fa-solid fa-user-group"></i> Only Friends</div>
+            </div>
+            <div class="set-row-sub" style="padding:0 4px;">Everyone = koi bhi DM kar sakta hai, Only Friends = sirf friends list waly.</div>
+        </div>
+
+        <!-- Read Receipts -->
+        <div class="set-card">
+            <div class="set-card-title"><i class="fa-solid fa-check-double"></i> Read Receipts</div>
+            <div class="set-row">
+                <div class="set-row-left">
+                    <i class="fa-solid fa-check-double" style="color:#3b82f6;"></i>
+                    <div class="set-row-info">
+                        <div class="set-row-label">Double Tick in PM</div>
+                        <div class="set-row-sub">Dusro ko pata chalega aap ne message parha hai</div>
+                    </div>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleReadReceipt" checked onchange="toggleSetting(this,'readReceipt')"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <!-- Room Mention Alert -->
+        <div class="set-card">
+            <div class="set-card-title"><i class="fa-solid fa-bell"></i> Notifications</div>
+            <div class="set-row">
+                <div class="set-row-left">
+                    <i class="fa-solid fa-at" style="color:#7c3aed;"></i>
+                    <div class="set-row-info">
+                        <div class="set-row-label">Room Mention Alert</div>
+                        <div class="set-row-sub">Jab koi room me @you mention kare</div>
+                    </div>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleMention" checked onchange="toggleSetting(this,'mention')"><span class="slider"></span></label>
+            </div>
+            <div class="set-row">
+                <div class="set-row-left">
+                    <i class="fa-solid fa-user-tag" style="color:#f59e0b;"></i>
+                    <div class="set-row-info">
+                        <div class="set-row-label">Tag Alert</div>
+                        <div class="set-row-sub">When someone tags you, get alert</div>
+                    </div>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleTag" checked onchange="toggleSetting(this,'tag')"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <!-- Silence / Sounds -->
+        <div class="set-card">
+            <div class="set-card-title"><i class="fa-solid fa-volume-high"></i> Sounds</div>
+            <div class="set-row">
+                <div class="set-row-left">
+                    <i class="fa-solid fa-volume-xmark" style="color:#ef4444;" id="silenceIcon"></i>
+                    <div class="set-row-info">
+                        <div class="set-row-label">Silence All Sounds</div>
+                        <div class="set-row-sub">Click to mute/unmute all chat sounds</div>
+                    </div>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleSilence" onchange="toggleSetting(this,'silence')"><span class="slider"></span></label>
+            </div>
+            <div class="set-row" id="soundRow">
+                <div class="set-row-left">
+                    <i class="fa-solid fa-music" style="color:#22c55e;"></i>
+                    <div class="set-row-info">
+                        <div class="set-row-label">Message Sounds</div>
+                        <div class="set-row-sub">New message pop sound</div>
+                    </div>
+                </div>
+                <label class="switch"><input type="checkbox" id="toggleMsgSound" checked onchange="toggleSetting(this,'msgSound')"><span class="slider"></span></label>
+            </div>
+            <div class="set-silence-note"><i class="fa-solid fa-circle-info" style="color:#d97706;margin-top:2px;"></i><span><b>Silence ON</b> pe saari sounds auto off ho jayengi. Toggle off karne ke liye upar wala switch off karo.</span></div>
+        </div>
+
+        <div style="height:20px;"></div>
+        <div style="text-align:center;color:#94a3b8;font-size:11px;">Settings automatically saved in browser</div>
+    </div>
+</div>
+
+<script>
+function setPmMode(mode, silent){
+    localStorage.setItem('pmMode', mode);
+    document.querySelectorAll('.set-radio').forEach(r=>r.classList.remove('selected'));
+    if(mode==='everyone'){ document.getElementById('pmEveryone')?.classList.add('selected'); }
+    else { document.getElementById('pmFriends')?.classList.add('selected'); }
+    if(!silent) console.log('PM mode:', mode);
+}
+function toggleSetting(el, type){
+    const val = el.checked;
+    if(type==='readReceipt') localStorage.setItem('readReceipt', val);
+    else if(type==='mention') localStorage.setItem('mentionAlert', val);
+    else if(type==='tag') localStorage.setItem('tagAlert', val);
+    else if(type==='silence'){
+        localStorage.setItem('silenceMode', val);
+        updateSilenceUI();
+    }
+    else if(type==='msgSound') localStorage.setItem('msgSound', val);
+    console.log(type, val);
+}
+function updateSilenceUI(){
+    const sil = document.getElementById('toggleSilence')?.checked;
+    const soundRow = document.getElementById('soundRow');
+    const icon = document.getElementById('silenceIcon');
+    if(sil){
+        if(icon){ icon.className='fa-solid fa-volume-xmark'; icon.style.color='#ef4444'; }
+        if(soundRow){ soundRow.style.opacity='0.45'; soundRow.style.pointerEvents='none'; }
+    }else{
+        if(icon){ icon.className='fa-solid fa-volume-high'; icon.style.color='#64748b'; }
+        if(soundRow){ soundRow.style.opacity='1'; soundRow.style.pointerEvents='auto'; }
+    }
+}
+(function init(){
+    const pm = localStorage.getItem('pmMode') || 'everyone';
+    setPmMode(pm, true);
+    const rr = localStorage.getItem('readReceipt');
+    if(rr!==null) document.getElementById('toggleReadReceipt').checked = rr==='true';
+    const men = localStorage.getItem('mentionAlert');
+    if(men!==null) document.getElementById('toggleMention').checked = men==='true';
+    const tag = localStorage.getItem('tagAlert');
+    if(tag!==null) document.getElementById('toggleTag').checked = tag==='true';
+    const sil = localStorage.getItem('silenceMode');
+    if(sil!==null) document.getElementById('toggleSilence').checked = sil==='true';
+    const msgS = localStorage.getItem('msgSound');
+    if(msgS!==null) document.getElementById('toggleMsgSound').checked = msgS==='true';
+    updateSilenceUI();
+})();
+</script>
+</body>
+</html>
