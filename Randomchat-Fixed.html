@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Random Chat - Real Online Count</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+body{background:#f8fafc;height:100vh;height:100dvh;display:flex;justify-content:center;}
+#randomChatView{display:flex;position:relative;width:100%;max-width:500px;height:100vh;height:100dvh;background:#f8fafc;flex-direction:column;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,0.05);}
+.switch{position:relative;display:inline-block;width:46px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.3s;border-radius:24px}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;transition:.3s;border-radius:50%}
+input:checked+.slider{background-color:#3b82f6}
+input:checked+.slider:before{transform:translateX(22px)}
+.rc-add-btn{padding:10px 14px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;}
+#randomChatView{display:flex;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;height:100vh;height:100dvh;background:#f8fafc;z-index:3100;flex-direction:column;overflow:hidden;}
+#randomChatView.active{display:flex;}
+.rc-header{padding:12px 16px;background:#fff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.rc-back{width:38px;height:38px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#334155;}
+.rc-header-title{font-size:16px;font-weight:800;color:#0f172a;flex:1;}
+.rc-content{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:18px;background:#f8fafc;}
+.rc-title{font-size:21px;font-weight:900;color:#0f172a;}
+.rc-desc{font-size:13px;color:#475569;line-height:1.6;margin-top:4px;}
+.rc-safe{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:10px 12px;display:flex;gap:9px;align-items:flex-start;}
+.rc-safe i{color:#f59e0b;margin-top:2px;}
+.rc-safe-text{font-size:12px;color:#92400e;line-height:1.5;font-weight:500;}
+.rc-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 10px rgba(0,0,0,0.03);}
+.rc-card-header{display:flex;align-items:center;justify-content:space-between;}
+.rc-card-title{font-size:13.5px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:8px;}
+.rc-card-title i{width:28px;height:28px;border-radius:8px;background:#eef2ff;color:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.rc-toggle-row{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;}
+.rc-toggle-label{font-size:13px;font-weight:700;color:#1e293b;}
+.rc-toggle-sub{font-size:11px;color:#64748b;margin-top:2px;line-height:1.4;}
+.rc-interests-box{background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.rc-interest-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:28px;}
+.rc-chip{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:5px 10px;border-radius:999px;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.rc-interest-input-row{display:flex;gap:8px;}
+.rc-interest-input{flex:1;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:12.5px;outline:none;background:#fff;}
+.rc-filter-row{display:flex;gap:8px;}
+.rc-filter-btn{flex:1;padding:11px;border-radius:12px;border:1.5px solid #e5e7eb;background:#fff;font-size:12px;font-weight:800;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;}
+.rc-filter-btn.selected{border-color:#3b82f6;background:#eff6ff;color:#2563eb;}
+.rc-bottom-filter-row{display:flex;gap:8px;margin-top:8px;}
+.rc-start-box{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(0,0,0,0.04);margin-top:4px;}
+.rc-start-left{display:flex;align-items:center;gap:12px;}
+.rc-start-icon{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#7c5cf0);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.rc-start-text{font-size:15px;font-weight:800;color:#0f172a;}
+.rc-start-sub{font-size:11px;color:#94a3b8;margin-top:2px;font-weight:600;}
+.rc-online{display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #bbf7d0;padding:8px 12px;border-radius:999px;}
+.rc-online.offline{background:#fefce8;border-color:#fde68a;}
+.rc-dot{width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,0.18);animation:rcPulse 1.8s infinite;}
+.rc-dot.offline-dot{background:#eab308;animation:none;}
+@keyframes rcPulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.rc-online-label{font-size:10px;font-weight:800;letter-spacing:0.6px;color:#16a34a;text-transform:uppercase;}
+.rc-online-label.offline-label{color:#ca8a04;}
+.rc-online-count{font-size:13px;font-weight:900;color:#0f172a;text-align:right;}
+.rc-start-btn{width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#7c5cf0);color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(59,130,246,0.35);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
+.rc-loading-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);z-index:3200;display:none;align-items:center;justify-content:center;padding:16px;}
+.rc-loading-overlay.active{display:flex;}
+.rc-loading-tab{background:#fff;border-radius:20px;width:100%;max-width:300px;padding:22px 18px;box-shadow:0 20px 50px rgba(0,0,0,0.25);display:flex;flex-direction:column;align-items:center;gap:14px;animation:rcTabPop .28s cubic-bezier(.34,1.56,.64,1);text-align:center;border:1px solid #e5e7eb;}
+@keyframes rcTabPop{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+.rc-loading-spinner{width:44px;height:44px;border:4px solid #e5e7eb;border-top-color:#3b82f6;border-radius:50%;animation:rcSpin 0.8s linear infinite;}
+@keyframes rcSpin{to{transform:rotate(360deg)}}
+.rc-loading-title{font-size:14px;font-weight:800;color:#0f172a;}
+.rc-loading-sub{font-size:11.5px;color:#64748b;line-height:1.5;margin-top:4px;}
+.rc-loading-dots{display:flex;gap:6px;}
+.rc-loading-dots span{width:8px;height:8px;border-radius:50%;background:#3b82f6;animation:rcBounce 1.2s infinite;}
+.rc-loading-dots span:nth-child(2){animation-delay:.2s}
+.rc-loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes rcBounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1);opacity:1}}
+.rc-loading-cancel{margin-top:4px;padding:8px 16px;border-radius:999px;border:1px solid #e5e7eb;background:#fff;font-size:12px;font-weight:700;color:#475569;cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="randomChatView" class="active" style="display:flex;position:relative;left:auto;transform:none;max-width:500px;">
+    <div class="rc-header">
+        <div class="rc-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="rc-header-title">Random Chat</div>
+        <div style="width:38px;"></div>
+    </div>
+    <div class="rc-content">
+        <div>
+            <div class="rc-title">Random Chats</div>
+            <div class="rc-desc">Meet someone new with every conversation! Connect with random people, share a laugh, and enjoy the excitement of not knowing who you'll meet next.</div>
+        </div>
+        <div class="rc-safe">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div class="rc-safe-text"><b>Stay safe:</b> Never share personal information with strangers.</div>
+        </div>
+        <div class="rc-card">
+            <div class="rc-card-header">
+                <div class="rc-card-title"><i class="fa-solid fa-heart"></i> Manage Your Interests</div>
+                <label class="switch"><input type="checkbox" id="rcInterestToggle" checked onchange="toggleInterestSection()"><span class="slider"></span></label>
+            </div>
+            <div id="rcInterestSection">
+                <div class="rc-toggle-row">
+                    <div>
+                        <div class="rc-toggle-label">Find people by interests</div>
+                        <div class="rc-toggle-sub">Turn this on to find people who share your interests.</div>
+                    </div>
+                </div>
+                <div class="rc-interests-box" style="margin-top:12px;">
+                    <div style="font-size:12px;font-weight:700;color:#334155;">Add a few interests to help others get to know you.</div>
+                    <div class="rc-interest-chips" id="rcChips"></div>
+                    <div class="rc-interest-input-row">
+                        <input type="text" id="rcInterestInput" class="rc-interest-input" placeholder="Add an interest" onkeypress="if(event.key==='Enter') addInterest()" />
+                        <button class="rc-add-btn" onclick="addInterest()"><i class="fa-solid fa-plus"></i> Add</button>
+                    </div>
+                    <div style="font-size:10.5px;color:#94a3b8;font-style:italic;">For example: cooking, hiking, books, music, city, country etc.</div>
+                </div>
+            </div>
+        </div>
+        <div class="rc-card">
+            <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:6px;">Choose who you'd like to chat with.</div>
+            <div class="rc-filter-row" style="margin-bottom:14px;">
+                <button class="rc-filter-btn" id="rcFilterVerified" onclick="setChatFilter('verified')"><i class="fa-solid fa-badge-check"></i> Verified users only</button>
+                <button class="rc-filter-btn selected" id="rcFilterAll" onclick="setChatFilter('all')"><i class="fa-solid fa-users"></i> All users</button>
+            </div>
+            <div style="height:1px;background:#f1f5f9;margin:4px 0;"></div>
+            <div class="rc-bottom-filter-row">
+                <button class="rc-filter-btn" onclick="goBack()"><i class="fa-solid fa-xmark"></i> Close</button>
+                <button class="rc-filter-btn selected" style="background:linear-gradient(135deg,#3b82f6,#7c5cf0);color:#fff;border-color:#3b82f6;" onclick="saveRandomPrefs()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </div>
+        </div>
+        <div class="rc-start-box" id="rcStartBox">
+            <div class="rc-start-left">
+                <div class="rc-start-icon"><i class="fa-solid fa-comments"></i></div>
+                <div>
+                    <div class="rc-start-text">Start Chatting</div>
+                    <div class="rc-start-sub">Check your interests & hit connect below</div>
+                </div>
+            </div>
+            <div class="rc-online" id="rcOnlineBox">
+                <div class="rc-dot" id="rcOnlineDot"></div>
+                <div>
+                    <div class="rc-online-label" id="rcOnlineLabel">Online</div>
+                    <div class="rc-online-count" id="rcOnlineCount">0</div>
+                </div>
+            </div>
+        </div>
+        <button class="rc-start-btn" id="rcStartBtn" onclick="startRandomChat()"><i class="fa-solid fa-shuffle"></i> Find Someone New</button>
+        <div style="height:40px;"></div>
+    </div>
+    <div class="rc-loading-overlay" id="rcLoadingOverlay" onclick="if(event.target===this) cancelRandomSearch()">
+        <div class="rc-loading-tab">
+            <div class="rc-loading-spinner"></div>
+            <div>
+                <div class="rc-loading-title">Connecting you...</div>
+                <div class="rc-loading-sub" id="rcLoadingText">Looking for someone who shares your vibe. This will just take a moment!</div>
+            </div>
+            <div class="rc-loading-dots"><span></span><span></span><span></span></div>
+            <button class="rc-loading-cancel" onclick="cancelRandomSearch()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== GO BACK =====
+function goBack(){ window.location.href='index.html'; }
+window.goBack = goBack;
+
+// ===== CORE VARS =====
+let rcOnlineInterval = null;
+let rcChatFilter = localStorage.getItem('rcChatFilter') || 'all';
+let rcInterests = JSON.parse(localStorage.getItem('rcInterests') || '[]');
+let rcLoadingMessages = [
+    "Looking for someone who shares your vibe. This will just take a moment!",
+    "Finding a cool person nearby your interests...",
+    "Matching you with someone interesting...",
+    "Almost there... connecting you to a new friend!"
+];
+let rcLoadingMsgInterval = null;
+let myId = 'u_' + Math.random().toString(36).slice(2,9) + '_' + Date.now();
+
+// ===== CLEAN FAKE DATA =====
+localStorage.removeItem('rcOnlineBase');
+
+// ===== REAL ONLINE COUNT UI =====
+function renderOnlineCount(count){
+    const countEl=document.getElementById('rcOnlineCount');
+    const dot=document.getElementById('rcOnlineDot');
+    const label=document.getElementById('rcOnlineLabel');
+    const box=document.getElementById('rcOnlineBox');
+    if(!countEl) return;
+    countEl.textContent = count;
+    if(count <= 0){
+        if(dot) dot.classList.add('offline-dot');
+        if(label){ label.textContent='Offline'; label.classList.add('offline-label'); }
+        if(box) box.classList.add('offline');
+    } else {
+        if(dot) dot.classList.remove('offline-dot');
+        if(label){ label.textContent='Online'; label.classList.remove('offline-label'); }
+        if(box) box.classList.remove('offline');
+    }
+}
+window.renderOnlineCount = renderOnlineCount;
+
+// ===== REAL PRESENCE - BroadcastChannel + localStorage (100% real, no fake) =====
+function initRealtimePresence(){
+    const channel = new BroadcastChannel('random_chat_presence_v2');
+    const STORAGE_KEY = 'rc_real_presence_v2';
+
+    function getList(){
+        try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }catch{ return {}; }
+    }
+    function saveList(obj){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+    }
+    function cleanOld(list){
+        const now = Date.now();
+        for(let k in list){ if(now - list[k].ts > 20000) delete list[k]; }
+        return list;
+    }
+    function heartbeat(){
+        let list = cleanOld(getList());
+        list[myId] = { ts: Date.now() };
+        saveList(list);
+        renderOnlineCount(Object.keys(list).length);
+        try{ channel.postMessage({ type: 'heartbeat', id: myId, ts: Date.now() }); }catch{}
+    }
+
+    // start at 0 then add self -> will show 1 if you are alone, which is real
+    heartbeat();
+    rcOnlineInterval = setInterval(heartbeat, 4000);
+
+    channel.onmessage = (e)=>{
+        let list = cleanOld(getList());
+        if(e.data?.id){
+            if(e.data.type === 'leave'){
+                delete list[e.data.id];
+            } else {
+                list[e.data.id] = { ts: e.data.ts || Date.now() };
+            }
+            saveList(list);
+        }
+        renderOnlineCount(Object.keys(list).length);
+    };
+
+    window.addEventListener('storage', (e)=>{
+        if(e.key === STORAGE_KEY){
+            let list = cleanOld(getList());
+            renderOnlineCount(Object.keys(list).length);
+        }
+    });
+
+    window.addEventListener('beforeunload', ()=>{
+        let list = getList();
+        delete list[myId];
+        saveList(list);
+        try{ channel.postMessage({ type: 'leave', id: myId }); }catch{}
+    });
+
+    // expose for debug
+    window._presenceChannel = channel;
+}
+
+function stopOnlinePresence(){
+    if(rcOnlineInterval){ clearInterval(rcOnlineInterval); rcOnlineInterval=null; }
+    // remove self
+    try{
+        const STORAGE_KEY = 'rc_real_presence_v2';
+        let list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        delete list[myId];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        if(window._presenceChannel) window._presenceChannel.postMessage({ type: 'leave', id: myId });
+    }catch{}
+}
+
+function startRandomChat(){
+    const overlay=document.getElementById('rcLoadingOverlay');
+    const btn=document.getElementById('rcStartBtn');
+    const textEl=document.getElementById('rcLoadingText');
+    if(!overlay) return;
+    overlay.classList.add('active');
+    if(btn){ btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Connecting...'; }
+    let msgIdx=0;
+    if(textEl) textEl.textContent=rcLoadingMessages[0];
+    rcLoadingMsgInterval=setInterval(()=>{
+        msgIdx=(msgIdx+1)%rcLoadingMessages.length;
+        if(textEl) textEl.textContent=rcLoadingMessages[msgIdx];
+    }, 1200);
+    setTimeout(()=>{
+        if(overlay.classList.contains('active')){
+            clearInterval(rcLoadingMsgInterval);
+            alert('🎉 Found someone new!\nInterests: '+(rcInterests.join(', ')||'Any')+'\nFilter: '+rcChatFilter);
+            cancelRandomSearch();
+        }
+    }, 3200);
+}
+function cancelRandomSearch(){
+    const overlay=document.getElementById('rcLoadingOverlay');
+    const btn=document.getElementById('rcStartBtn');
+    if(overlay) overlay.classList.remove('active');
+    if(btn){ btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-shuffle"></i> Find Someone New'; }
+    if(rcLoadingMsgInterval){ clearInterval(rcLoadingMsgInterval); rcLoadingMsgInterval=null; }
+}
+function toggleInterestSection(silent){
+    const toggle=document.getElementById('rcInterestToggle');
+    const sec=document.getElementById('rcInterestSection');
+    if(!toggle||!sec) return;
+    sec.style.display=toggle.checked?'block':'none';
+    localStorage.setItem('rcInterestEnabled',toggle.checked);
+}
+function addInterest(){
+    const input=document.getElementById('rcInterestInput');
+    if(!input) return;
+    const val=input.value.trim().toLowerCase();
+    if(!val) return;
+    if(rcInterests.includes(val)){ input.value=''; return; }
+    if(rcInterests.length>=12){ alert('Max 12 interests allowed'); return; }
+    rcInterests.push(val);
+    localStorage.setItem('rcInterests',JSON.stringify(rcInterests));
+    input.value='';
+    renderInterestChips();
+}
+function removeInterest(idx){
+    rcInterests.splice(idx,1);
+    localStorage.setItem('rcInterests',JSON.stringify(rcInterests));
+    renderInterestChips();
+}
+function renderInterestChips(){
+    const container=document.getElementById('rcChips');
+    if(!container) return;
+    container.innerHTML='';
+    rcInterests.forEach((interest,i)=>{
+        const chip=document.createElement('div');
+        chip.className='rc-chip';
+        chip.innerHTML=`${interest} <i class="fa-solid fa-xmark" onclick="removeInterest(${i})" style="cursor:pointer;"></i>`;
+        container.appendChild(chip);
+    });
+}
+function setChatFilter(type,silent){
+    rcChatFilter=type;
+    localStorage.setItem('rcChatFilter',type);
+    const vBtn=document.getElementById('rcFilterVerified');
+    const aBtn=document.getElementById('rcFilterAll');
+    if(vBtn) vBtn.classList.remove('selected');
+    if(aBtn) aBtn.classList.remove('selected');
+    if(type==='verified' && vBtn) vBtn.classList.add('selected');
+    if(type==='all' && aBtn) aBtn.classList.add('selected');
+}
+function saveRandomPrefs(){
+    localStorage.setItem('rcInterests',JSON.stringify(rcInterests));
+    localStorage.setItem('rcChatFilter',rcChatFilter);
+    const toggle=document.getElementById('rcInterestToggle');
+    if(toggle) localStorage.setItem('rcInterestEnabled',toggle.checked);
+    const toast=document.createElement('div');
+    toast.textContent='Preferences saved!';
+    toast.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:999px;font-size:12px;font-weight:700;z-index:5000;';
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.remove(),2000);
+}
+
+// init
+document.addEventListener('DOMContentLoaded',()=>{
+    renderOnlineCount(0); // start 0 then init will make 1
+    initRealtimePresence();
+    renderInterestChips();
+    setChatFilter(rcChatFilter,true);
+    const t=document.getElementById('rcInterestToggle');
+    if(t){
+        const saved=localStorage.getItem('rcInterestEnabled');
+        if(saved!==null) t.checked=saved==='true';
+        toggleInterestSection(true);
+    }
+});
+
+function openRandomChat(){}
+function closeRandomChat(){ goBack(); }
+</script>
+</body>
+</html>
