@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trending Groups</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+body{background:#f5f6f8;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:420px;background:#ffffff;min-height:100vh;position:relative;display:flex;flex-direction:column;box-shadow:0 0 30px rgba(0,0,0,0.06)}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;position:sticky;top:0;z-index:5}
+.header-top .back{width:36px;height:36px;border-radius:50%;background:#f3f4f6;display:flex;align-items:center;justify-content:center;color:#111;cursor:pointer}
+.header-title{font-size:20px;font-weight:900;letter-spacing:-0.3px;color:#111827;text-align:center;flex:1}
+.content{padding:8px 16px 100px 16px;flex:1;background:#f7f7f9}
+.trending-header{padding:8px 4px 14px 4px}
+.trending-header h1{font-size:28px;font-weight:900;color:#0f172a;line-height:1.1;letter-spacing:-0.6px}
+.trending-header p{font-size:14px;color:#64748b;margin-top:6px;line-height:1.4;font-weight:500}
+
+.live-tab{display:flex;align-items:center;justify-content:space-between;background:#0f172a;border-radius:16px;padding:12px 14px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 8px 20px rgba(15,23,42,0.18)}
+.live-tab-left{display:flex;align-items:center;gap:10px}
+.dot-wrap{width:28px;height:28px;background:rgba(34,197,94,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.dot{width:10px;height:10px;background:#22c55e;border-radius:50%;box-shadow:0 0 0 0 rgba(34,197,94,0.6);animation:pulse 1.5s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,0.7)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.live-label{color:#fff;font-weight:800;font-size:13px;letter-spacing:0.3px;text-transform:uppercase}
+.live-sub{color:#94a3b8;font-size:11px;margin-top:1px;font-weight:600}
+.live-timer{display:flex;align-items:center;gap:8px;background:#ffffff;border-radius:12px;padding:8px 12px;min-width:110px;justify-content:center}
+.live-timer i{color:#ef4444;font-size:12px}
+.live-timer .time{font-size:18px;font-weight:900;color:#0f172a;letter-spacing:0.5px;font-variant-numeric:tabular-nums}
+.live-timer .unit{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px}
+
+.progress-bar{position:absolute;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#22c55e,#3b82f6);width:100%;transform-origin:left;transition:width 1s linear}
+
+.group-list{display:flex;flex-direction:column;gap:10px}
+.group-card{background:#fff;border:1px solid #eef0f3;border-radius:18px;padding:12px 12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s;position:relative}
+.group-card:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,0.06);border-color:#e2e8f0}
+.rank{width:28px;height:28px;border-radius:8px;background:#f1f5f9;color:#0f172a;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.group-card.top .rank{background:#0f172a;color:#fff}
+.group-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.group-info{flex:1;min-width:0}
+.group-name{font-size:14.5px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group-meta{display:flex;align-items:center;gap:6px;margin-top:3px}
+.group-meta span{font-size:11px;color:#64748b;font-weight:600}
+.live-badge{font-size:10px;background:#dcfce7;color:#16a34a;padding:3px 7px;border-radius:20px;font-weight:800;display:flex;align-items:center;gap:4px}
+.join-btn{background:#0f172a;color:#fff;border:none;padding:8px 16px;border-radius:24px;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.2s}
+.join-btn.joined{background:#f1f5f9;color:#64748b}
+.join-btn:hover{background:#1e293b}
+
+.bottom-hint{text-align:center;padding:18px;color:#94a3b8;font-size:12px;font-weight:600}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header-top">
+    <div class="back" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></div>
+    <div class="header-title">Trend</div>
+    <div class="back"><i class="fa-solid fa-ellipsis"></i></div>
+  </div>
+
+  <div class="content">
+    <div class="trending-header">
+      <h1>Trending Groups</h1>
+      <p>Join one of the top 10 trending groups and start chatting.</p>
+    </div>
+
+    <div class="live-tab" id="liveTab">
+      <div class="live-tab-left">
+        <div class="dot-wrap"><div class="dot"></div></div>
+        <div>
+          <div class="live-label">Live Update</div>
+          <div class="live-sub">Next refresh in</div>
+        </div>
+      </div>
+      <div class="live-timer">
+        <i class="fa-regular fa-clock"></i>
+        <div class="time" id="countdown">05:00</div>
+        <div class="unit">min</div>
+      </div>
+      <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <div class="group-list" id="groupList"></div>
+    <div class="bottom-hint">Groups auto-update every 5 minutes • Stay tuned 🔥</div>
+  </div>
+</div>
+
+<script>
+const groups = [
+  {name:'Pakistan Lovers 🇵🇰', members:'12.5k', icon:'🇵🇰', bg:'#fef3c7', trending:'+2.3k today', rank:1},
+  {name:'Gaming Zone 🎮', members:'8.2k', icon:'🎮', bg:'#dbeafe', trending:'+1.8k today', rank:2},
+  {name:'Music Lovers 🎵', members:'5.1k', icon:'🎵', bg:'#fce7f3', trending:'+1.2k today', rank:3},
+  {name:'Funny Memes 😂', members:'15k', icon:'😂', bg:'#ffedd5', trending:'+3.1k today', rank:4},
+  {name:'Cricket Fans 🏏', members:'9.7k', icon:'🏏', bg:'#dcfce7', trending:'+890 today', rank:5},
+  {name:'Study Group 📚', members:'4.3k', icon:'📚', bg:'#e0e7ff', trending:'+650 today', rank:6},
+  {name:'Foodies Hub 🍕', members:'6.8k', icon:'🍕', bg:'#fee2e2', trending:'+540 today', rank:7},
+  {name:'Travel Buddies ✈️', members:'3.9k', icon:'✈️', bg:'#ccfbf1', trending:'+420 today', rank:8},
+  {name:'Tech Talk 💻', members:'7.2k', icon:'💻', bg:'#f3e8ff', trending:'+380 today', rank:9},
+  {name:'Late Night Chats 🌙', members:'11k', icon:'🌙', bg:'#e0f2fe', trending:'+2.7k today', rank:10},
+];
+
+function render(){
+  const list = document.getElementById('groupList');
+  list.innerHTML='';
+  groups.forEach(g=>{
+    const div=document.createElement('div');
+    div.className = 'group-card' + (g.rank<=3?' top':'');
+    div.innerHTML=`
+      <div class="rank">#${g.rank}</div>
+      <div class="group-icon" style="background:${g.bg}">${g.icon}</div>
+      <div class="group-info">
+        <div class="group-name">${g.name}</div>
+        <div class="group-meta">
+          <span><i class="fa-solid fa-users"></i> ${g.members}</span>
+          <span>•</span>
+          <span style="color:#16a34a">${g.trending}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div class="live-badge"><div style="width:6px;height:6px;background:#22c55e;border-radius:50%"></div> LIVE</div>
+        <button class="join-btn" onclick="toggleJoin(this)">Join</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+function toggleJoin(btn){
+  if(btn.classList.contains('joined')){
+    btn.classList.remove('joined'); btn.textContent='Join';
+  } else {
+    btn.classList.add('joined'); btn.textContent='Joined ✓';
+  }
+}
+
+// Countdown 05:00 logic
+let totalSeconds = 5*60;
+const countdownEl = document.getElementById('countdown');
+const progressEl = document.getElementById('progress');
+const totalDuration = 5*60;
+
+function updateTimer(){
+  const m = Math.floor(totalSeconds/60);
+  const s = totalSeconds%60;
+  countdownEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const pct = (totalSeconds/totalDuration)*100;
+  progressEl.style.width = pct+'%';
+  if(totalSeconds<=0){
+    // Refresh animation
+    totalSeconds = totalDuration;
+    // Shuffle trending numbers to show live update
+    groups.forEach(g=>{
+      const add = Math.floor(Math.random()*200)+50;
+      g.trending = `+${(Math.random()*2+0.3).toFixed(1)}k today`;
+    });
+    render();
+    countdownEl.style.transform='scale(1.15)';
+    setTimeout(()=>countdownEl.style.transform='scale(1)',200);
+  } else {
+    totalSeconds--;
+  }
+}
+updateTimer();
+setInterval(updateTimer,1000);
+
+render();
+</script>
+</body>
+</html>
