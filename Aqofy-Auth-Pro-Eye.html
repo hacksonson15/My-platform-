@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aqofy - Auth</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+body{background:#eef2f5;min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:center;padding:20px;color:#333}
+.auth-wrapper{width:100%;max-width:400px}
+.brand-top{text-align:center;margin-bottom:24px}
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.aqofy-logo{width:64px;height:64px;position:relative;display:grid;place-items:center;border-radius:18px;background:linear-gradient(135deg,#3b82f6 0%,#6366f1 45%,#8b5cf6 100%);box-shadow:0 8px 24px rgba(99,102,241,0.35),0 2px 8px rgba(59,130,246,0.25);animation:logoFloat 3s ease-in-out infinite}
+.aqofy-logo::before{content:'';position:absolute;inset:2px;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0));pointer-events:none}
+.logo-letter{font-size:28px;font-weight:900;color:#fff;letter-spacing:-1.5px;position:relative;z-index:1}
+.logo-dot{position:absolute;top:10px;right:10px;width:10px;height:10px;background:#fff;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,0.3);z-index:2}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.flowing-logo{font-size:28px;font-weight:900;letter-spacing:-0.04em;background:linear-gradient(90deg,#3b82f6 0%,#6366f1 12%,#8b5cf6 24%,#ec4899 36%,#f59e0b 48%,#10b981 60%,#06b6d4 72%,#3b82f6 84%,#6366f1 100%);background-size:400% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:aqofyFlow 60s linear infinite;display:inline-block}
+@keyframes aqofyFlow{0%{background-position:0% 50%}25%{background-position:50% 50%}50%{background-position:100% 50%}75%{background-position:50% 50%}100%{background-position:0% 50%}}
+
+.auth-card{background:#ffffff;width:100%;padding:28px 26px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.08);animation:loginPop 0.4s ease}
+@keyframes loginPop{0%{opacity:0;transform:translateY(10px) scale(0.97)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+.tabs{display:flex;gap:6px;background:#eef2f5;padding:4px;border-radius:8px;margin-bottom:22px}
+.tab-btn{flex:1;padding:10px;border:none;border-radius:6px;background:transparent;font-weight:700;font-size:13px;color:#666;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:#ffffff;color:#3b82f6;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.tab-btn i{margin-right:5px}
+
+.auth-title{font-size:22px;font-weight:800;color:#333;margin-bottom:6px;text-align:center}
+.auth-sub{color:#666;font-size:13px;margin-bottom:22px;text-align:center;line-height:1.5}
+
+.input-group{margin-bottom:14px;text-align:left}
+.input-group label{display:block;font-size:11px;color:#555;margin-bottom:5px;font-weight:700;letter-spacing:0.5px}
+.input-group input{width:100%;padding:12px 12px;border:1.5px solid #ddd;border-radius:8px;outline:none;font-size:14px;transition:.2s;background:#fff}
+.input-group input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+
+/* Professional Eye Toggle - like Google / Apple */
+.pass-wrap{position:relative;display:flex;align-items:center}
+.pass-wrap input{padding-right:44px;flex:1}
+.eye-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:none;background:transparent;display:grid;place-items:center;cursor:pointer;border-radius:6px;color:#9ca3af;transition:all .18s;outline:none}
+.eye-btn:hover{color:#4b5563;background:#f3f4f6}
+.eye-btn:active{transform:translateY(-50%) scale(0.92)}
+.eye-btn svg{width:18px;height:18px;stroke-width:1.8;pointer-events:none}
+
+.row{display:flex;justify-content:space-between;align-items:center;margin:10px 0 18px}
+.checkbox{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;font-weight:600;cursor:pointer}
+.checkbox input{accent-color:#3b82f6}
+.link{font-size:12px;color:#3b82f6;font-weight:700;text-decoration:none;cursor:pointer}
+.link:hover{text-decoration:underline}
+
+.auth-btn{width:100%;padding:12px;background:linear-gradient(90deg,#3b82f6,#6366f1);color:#fff;border:none;border-radius:8px;font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
+.auth-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(59,130,246,0.4)}
+.auth-btn:active{transform:scale(0.98)}
+.auth-btn.secondary{background:#fff;color:#333;border:1.5px solid #ddd;box-shadow:none}
+.auth-btn.secondary:hover{border-color:#3b82f6;color:#3b82f6}
+
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:#999;font-size:11px;font-weight:700;letter-spacing:0.5px}
+.divider span{flex:1;height:1px;background:#e5e7eb}
+.guest-btn{width:100%;padding:11px;background:#fff;border:1.5px solid #ddd;border-radius:8px;font-weight:700;font-size:13px;color:#555;cursor:pointer;transition:.2s}
+.guest-btn:hover{border-color:#3b82f6;color:#3b82f6}
+.error-msg{display:none;margin-top:12px;color:#ef4444;background:#fef2f2;border:1px solid #fecaca;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600}
+.success-msg{display:none;margin-top:12px;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;padding:9px 10px;border-radius:8px;font-size:12px;font-weight:600}
+.footer-text{text-align:center;margin-top:18px;font-size:12px;color:#6b7280}
+.footer-text a{color:#3b82f6;font-weight:700;text-decoration:none;cursor:pointer}
+.hidden{display:none !important}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);display:none;justify-content:center;align-items:center;padding:20px;z-index:100}
+.modal-overlay.open{display:flex}
+.modal-card{background:#fff;width:100%;max-width:380px;padding:26px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.18);animation:loginPop .35s ease}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-header h3{font-size:18px;font-weight:800;color:#222}
+.modal-close{width:32px;height:32px;border-radius:8px;border:1px solid #e5e7eb;background:#f9fafb;display:grid;place-items:center;cursor:pointer;color:#666}
+.modal-step{font-size:11px;font-weight:700;color:#3b82f6;background:#eff6ff;border:1px solid #dbeafe;padding:4px 10px;border-radius:99px;display:inline-block;margin-bottom:14px}
+.code-info{background:#f0f6ff;border:1px dashed #93c5fd;padding:10px;border-radius:8px;font-size:12px;color:#334155;margin:10px 0;text-align:center}
+.code-info strong{color:#1d4ed8;letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="brand-top">
+        <div class="logo-wrap">
+            <div class="aqofy-logo"><div class="logo-dot"></div><span class="logo-letter">A</span></div>
+            <div class="flowing-logo">Aqofy</div>
+        </div>
+    </div>
+
+    <div class="auth-card">
+        <div class="tabs">
+            <button class="tab-btn active" id="loginTabBtn" onclick="switchMode('login')"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+            <button class="tab-btn" id="signupTabBtn" onclick="switchMode('signup')"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+        </div>
+
+        <h2 class="auth-title" id="title">Welcome Back</h2>
+        <p class="auth-sub" id="subtitle">Please login to continue</p>
+
+        <form id="authForm" onsubmit="handleAuth(event)">
+            <div class="input-group hidden" id="nameGroup">
+                <label>FULL NAME</label>
+                <input type="text" id="fullName" placeholder="John Doe">
+            </div>
+
+            <div class="input-group">
+                <label>EMAIL ADDRESS</label>
+                <input type="email" id="email" placeholder="john@gmail.com" required autocomplete="email">
+            </div>
+
+            <div class="input-group">
+                <label>PASSWORD</label>
+                <div class="pass-wrap">
+                    <input type="password" id="password" placeholder="Enter password" required autocomplete="current-password">
+                    <button type="button" class="eye-btn" id="btn-password" onclick="togglePass('password','btn-password')" tabindex="-1" aria-label="Show password">
+                        <!-- eye open svg -->
+                        <svg id="icon-password-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg id="icon-password-closed" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.53 9.53a3 3 0 1 0 4.24 4.24"></path><path d="M1 1l22 22"></path><path d="M14.12 14.12a3 3 0 0 1-4.24-4.24"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group hidden" id="confirmGroup">
+                <label>CONFIRM PASSWORD</label>
+                <div class="pass-wrap">
+                    <input type="password" id="confirmPassword" placeholder="Confirm password">
+                    <button type="button" class="eye-btn" id="btn-confirmPassword" onclick="togglePass('confirmPassword','btn-confirmPassword')" tabindex="-1">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg class="eye-closed hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.53 9.53a3 3 0 1 0 4.24 4.24"></path><path d="M1 1l22 22"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="row" id="loginOptions">
+                <label class="checkbox"><input type="checkbox" id="remember"> Remember me</label>
+                <a class="link" onclick="openForgot()">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="auth-btn" id="submitBtn"><i class="fa-solid fa-right-to-bracket" style="margin-right:6px"></i> LOGIN</button>
+            <div id="errorBox" class="error-msg"></div>
+            <div id="successBox" class="success-msg"></div>
+        </form>
+
+        <div class="divider"><span></span>OR<span></span></div>
+        <button class="guest-btn" onclick="guestLogin()"><i class="fa-solid fa-user-secret" style="margin-right:6px"></i> Continue as Guest</button>
+        <div class="footer-text"><span id="switchText">Don't have an account? <a onclick="switchMode('signup')">Create one</a></span></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="forgotModal">
+    <div class="modal-card">
+        <div class="modal-header"><h3>Reset Password</h3><button class="modal-close" onclick="closeForgot()"><i class="fa-solid fa-xmark"></i></button></div>
+        <div id="fpStep1">
+            <span class="modal-step">STEP 1 OF 3</span>
+            <p style="font-size:13px;color:#666;margin-bottom:14px;line-height:1.5">Enter your Gmail address. We will send a 6-digit verification code.</p>
+            <div class="input-group"><label>EMAIL ADDRESS</label><input type="email" id="fpEmail" placeholder="john@gmail.com"></div>
+            <button class="auth-btn" onclick="sendResetCode()"><i class="fa-solid fa-paper-plane" style="margin-right:6px"></i> Send Code</button>
+            <div id="fpError1" class="error-msg"></div>
+        </div>
+        <div id="fpStep2" class="hidden">
+            <span class="modal-step">STEP 2 OF 3</span>
+            <p style="font-size:13px;color:#666;margin-bottom:10px">Code sent to <strong id="fpEmailShow"></strong></p>
+            <div class="code-info">Demo Code: <strong id="demoCode">------</strong><br><span style="font-size:10px;color:#64748b">In real app this will go to Gmail via backend</span></div>
+            <div class="input-group"><label>ENTER 6-DIGIT CODE</label><input type="text" id="fpCode" placeholder="123456" maxlength="6" style="letter-spacing:4px;font-weight:800;text-align:center;font-size:18px"></div>
+            <button class="auth-btn" onclick="verifyResetCode()"><i class="fa-solid fa-check" style="margin-right:6px"></i> Verify Code</button>
+            <button class="auth-btn secondary" style="margin-top:10px" onclick="sendResetCode(true)"><i class="fa-solid fa-rotate" style="margin-right:6px"></i> Resend Code</button>
+            <div id="fpError2" class="error-msg"></div><div id="fpSuccess2" class="success-msg"></div>
+        </div>
+        <div id="fpStep3" class="hidden">
+            <span class="modal-step">STEP 3 OF 3</span>
+            <p style="font-size:13px;color:#666;margin-bottom:14px">Code verified! Now create your new password.</p>
+            <div class="input-group"><label>NEW PASSWORD</label>
+                <div class="pass-wrap"><input type="password" id="fpNewPass" placeholder="Enter new password">
+                    <button type="button" class="eye-btn" id="btn-fpNewPass" onclick="togglePass('fpNewPass','btn-fpNewPass')" tabindex="-1"><svg class="eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg class="eye-closed hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M1 1l22 22"></path></svg></button>
+                </div>
+            </div>
+            <div class="input-group"><label>CONFIRM NEW PASSWORD</label>
+                <div class="pass-wrap"><input type="password" id="fpConfirmPass" placeholder="Confirm new password">
+                    <button type="button" class="eye-btn" id="btn-fpConfirmPass" onclick="togglePass('fpConfirmPass','btn-fpConfirmPass')" tabindex="-1"><svg class="eye-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg class="eye-closed hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M1 1l22 22"></path></svg></button>
+                </div>
+            </div>
+            <button class="auth-btn" onclick="resetPassword()"><i class="fa-solid fa-key" style="margin-right:6px"></i> Reset Password</button>
+            <div id="fpError3" class="error-msg"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+let mode='login';let generatedCode='';let fpVerifiedEmail='';
+function togglePass(inputId, btnId){
+    const input=document.getElementById(inputId);
+    const btn=document.getElementById(btnId);
+    if(!input||!btn) return;
+    const openIcon=btn.querySelector('.eye-open') || document.getElementById('icon-'+inputId+'-open') || btn.querySelector('svg:first-of-type');
+    const closedIcon=btn.querySelector('.eye-closed') || document.getElementById('icon-'+inputId+'-closed') || btn.querySelector('svg:last-of-type');
+    // fallback for first password btn which has ids
+    const open1=document.getElementById('icon-password-open');
+    const closed1=document.getElementById('icon-password-closed');
+    
+    if(input.type==='password'){
+        input.type='text';
+        if(open1 && closed1 && inputId==='password'){
+            open1.classList.add('hidden'); closed1.classList.remove('hidden');
+        }else if(openIcon && closedIcon){
+            openIcon.classList.add('hidden'); closedIcon.classList.remove('hidden');
+        }
+        btn.style.color='#3b82f6';
+    }else{
+        input.type='password';
+        if(open1 && closed1 && inputId==='password'){
+            open1.classList.remove('hidden'); closed1.classList.add('hidden');
+        }else if(openIcon && closedIcon){
+            openIcon.classList.remove('hidden'); closedIcon.classList.add('hidden');
+        }
+        btn.style.color='#9ca3af';
+    }
+}
+function switchMode(newMode){
+    mode=newMode;const isSignup=mode==='signup';
+    document.getElementById('loginTabBtn').classList.toggle('active',!isSignup);
+    document.getElementById('signupTabBtn').classList.toggle('active',isSignup);
+    document.getElementById('nameGroup').classList.toggle('hidden',!isSignup);
+    document.getElementById('confirmGroup').classList.toggle('hidden',!isSignup);
+    document.getElementById('loginOptions').classList.toggle('hidden',isSignup);
+    document.getElementById('fullName').required=isSignup;
+    document.getElementById('confirmPassword').required=isSignup;
+    document.getElementById('title').innerText=isSignup?'Create Account':'Welcome Back';
+    document.getElementById('subtitle').innerText=isSignup?'Create your Aqofy account':'Please login to continue';
+    document.getElementById('submitBtn').innerHTML=isSignup?'<i class="fa-solid fa-user-plus" style="margin-right:6px"></i> CREATE ACCOUNT':'<i class="fa-solid fa-right-to-bracket" style="margin-right:6px"></i> LOGIN';
+    document.getElementById('switchText').innerHTML=isSignup?'Already have an account? <a onclick="switchMode(\'login\')">Login</a>':'Don\'t have an account? <a onclick="switchMode(\'signup\')">Create one</a>';
+    hideMsg();
+}
+function showMsg(t,type){const e=document.getElementById('errorBox'),s=document.getElementById('successBox');hideMsg();if(type==='success'){s.style.display='block';s.innerText=t}else{e.style.display='block';e.innerText=t}}
+function hideMsg(){document.getElementById('errorBox').style.display='none';document.getElementById('successBox').style.display='none';}
+function handleAuth(e){e.preventDefault();hideMsg();const email=document.getElementById('email').value.trim();const pass=document.getElementById('password').value.trim();const name=document.getElementById('fullName').value.trim();const confirm=document.getElementById('confirmPassword').value.trim();const btn=document.getElementById('submitBtn');if(!email||!pass){showMsg('Please fill all required fields','error');return;}if(mode==='signup'){if(!name){showMsg('Please enter full name','error');return;}if(pass.length<6){showMsg('Password must be at least 6 characters','error');return;}if(pass!==confirm){showMsg('Passwords do not match','error');return;}}try{localStorage.setItem('currentLoggedInUser',email);localStorage.setItem('isLoggedIn','true');localStorage.setItem('userFullName',name||email);localStorage.setItem('userPassword_'+email,pass);}catch{}btn.innerHTML='<i class="fa-solid fa-check"></i> Success';btn.style.background='#22c55e';btn.disabled=true;setTimeout(()=>{showMsg(mode==='signup'?'Account created successfully!':'Login Successful! Welcome '+email,'success');btn.innerHTML=mode==='signup'?'<i class="fa-solid fa-user-plus" style="margin-right:6px"></i> CREATE ACCOUNT':'<i class="fa-solid fa-right-to-bracket" style="margin-right:6px"></i> LOGIN';btn.style.background='';btn.disabled=false;},700);}
+function guestLogin(){localStorage.setItem('loginType','guest');localStorage.setItem('isLoggedIn','true');showMsg('Guest mode activated — View only','success');}
+function openForgot(){document.getElementById('forgotModal').classList.add('open');document.getElementById('fpStep1').classList.remove('hidden');document.getElementById('fpStep2').classList.add('hidden');document.getElementById('fpStep3').classList.add('hidden');document.getElementById('fpEmail').value=document.getElementById('email').value.trim();}
+function closeForgot(){document.getElementById('forgotModal').classList.remove('open');generatedCode='';fpVerifiedEmail='';document.getElementById('fpEmail').value='';document.getElementById('fpCode').value='';document.getElementById('fpNewPass').value='';document.getElementById('fpConfirmPass').value='';}
+function sendResetCode(isResend=false){const email=document.getElementById('fpEmail').value.trim();const err=document.getElementById('fpError1');if(!email||!email.includes('@')){err.style.display='block';err.innerText='Please enter valid Gmail address';return;}err.style.display='none';generatedCode=Math.floor(100000+Math.random()*900000).toString();fpVerifiedEmail=email;localStorage.setItem('aqofy_reset_code_'+email,generatedCode);document.getElementById('demoCode').innerText=generatedCode;document.getElementById('fpEmailShow').innerText=email;document.getElementById('fpStep1').classList.add('hidden');document.getElementById('fpStep2').classList.remove('hidden');document.getElementById('fpStep3').classList.add('hidden');document.getElementById('fpSuccess2').style.display='block';document.getElementById('fpSuccess2').innerText=isResend?'New code sent!':'Code sent to your Gmail! Check inbox.';setTimeout(()=>{document.getElementById('fpSuccess2').style.display='none';},3000);}
+function verifyResetCode(){const code=document.getElementById('fpCode').value.trim();const err=document.getElementById('fpError2');const suc=document.getElementById('fpSuccess2');if(code.length!==6){err.style.display='block';err.innerText='Enter 6-digit code';return;}if(code!==generatedCode){err.style.display='block';err.innerText='Invalid code. Please check and try again.';return;}err.style.display='none';suc.style.display='block';suc.innerText='Code verified!';setTimeout(()=>{document.getElementById('fpStep2').classList.add('hidden');document.getElementById('fpStep3').classList.remove('hidden');suc.style.display='none';},600);}
+function resetPassword(){const np=document.getElementById('fpNewPass').value.trim();const cp=document.getElementById('fpConfirmPass').value.trim();const err=document.getElementById('fpError3');if(!np||np.length<6){err.style.display='block';err.innerText='Password must be at least 6 characters';return;}if(np!==cp){err.style.display='block';err.innerText='Passwords do not match';return;}err.style.display='none';try{localStorage.setItem('userPassword_'+fpVerifiedEmail,np);localStorage.setItem('currentLoggedInUser',fpVerifiedEmail);}catch{}document.getElementById('fpStep3').innerHTML='<div style="text-align:center;padding:20px 0"><div style="width:56px;height:56px;background:#22c55e;color:#fff;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:24px"><i class="fa-solid fa-check"></i></div><h4 style="font-size:18px;font-weight:800;color:#222;margin-bottom:6px">Password Reset!</h4><p style="font-size:13px;color:#666">Your password has been updated successfully.</p><button class="auth-btn" style="margin-top:16px" onclick="closeForgot()">Continue to Login</button></div>';}
+document.addEventListener('DOMContentLoaded',()=>{const s=localStorage.getItem('currentLoggedInUser');if(s)document.getElementById('email').value=s;document.getElementById('forgotModal').addEventListener('click',(e)=>{if(e.target.id==='forgotModal')closeForgot();});});
+</script>
+</body>
+</html>
